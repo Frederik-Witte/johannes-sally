@@ -1,0 +1,273 @@
+/* Countdown and calendar: a dial printed in letterpress on card stock, like a fine watch face.
+   A railroad seconds track with a needle, deep-pressed Playfair numerals, a maker's line.
+   The CSS default is the final, readable state. JS rolls the seconds and adds a one-time entrance. */
+@layer countdown {
+  .countdown {
+    --cd-ink-soft: color-mix(in srgb, var(--ink) 64%, transparent);
+    --cd-ink-faint: color-mix(in srgb, var(--ink) 26%, transparent);
+    /* Letterpress: light catches the lower wall of the impression */
+    --cd-press: 0 .012em 0 rgba(255, 255, 255, .9), 0 -.006em 0 rgba(23, 21, 19, .10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cd__heading { margin-bottom: clamp(28px, 5vw, 56px); }
+
+  /* ---------- The dial: card stock, printed double rule ---------- */
+  .dial {
+    position: relative;
+    width: min(100%, 1040px);
+    padding: clamp(28px, 4.4vw, 54px) clamp(24px, 5.4vw, 68px) clamp(24px, 3.4vw, 40px);
+    background: var(--card) url("../img/grain.png") 0 0 / 256px repeat;
+    /* card thickness: a lit top edge, then the paper shadow */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), inset 0 -1px 0 rgba(23, 21, 19, .05), var(--shadow-paper);
+    container-type: inline-size;
+    isolation: isolate;
+    text-align: center;
+  }
+  /* Engine-turned field behind the numerals, as on a guilloché dial. Printed in ink (#171513) at a whisper. */
+  .dial::after {
+    content: "";
+    position: absolute;
+    inset: 17px;
+    z-index: -1;
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='10'%3E%3Cpath d='M0 5Q9 9.6 18 5T36 5M0 5Q9 .4 18 5T36 5' fill='none' stroke='%23171513' stroke-width='.5'/%3E%3C/svg%3E") 50% 50% / 36px 10px repeat;
+    opacity: .09;
+    -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 54%, #000 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 62% 58% at 50% 54%, #000 30%, transparent 100%);
+  }
+  .dial::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    pointer-events: none;
+    border: 1px solid var(--cd-ink-soft);
+    box-shadow: inset 0 0 0 3px var(--card), inset 0 0 0 4px var(--cd-ink-faint);
+  }
+
+  /* ---------- Railroad seconds track: 60 on the left, 0 on the right ---------- */
+  .dial__scale { position: relative; display: block; padding-top: 19px; margin: 0 clamp(2px, 1.2cqi, 8px) clamp(12px, 2.4cqi, 26px); }
+  .dial__nums {
+    position: absolute; left: 0; right: 0; top: 0; height: 14px;
+    font: 400 12px / 14px var(--f-display);
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: .02em;
+    color: var(--graphite);
+  }
+  .dial__nums i { position: absolute; top: 0; left: calc(var(--x) * 100%); font-style: normal; transform: translateX(-50%); }
+  .dial__ticks { display: block; width: 100%; height: 16px; overflow: visible; color: var(--cd-ink-soft); }
+  .dial__ticks path { fill: none; stroke: currentColor; stroke-width: 1px; vector-effect: non-scaling-stroke; shape-rendering: crispEdges; }
+  .dial__ticks .dial__quarters { stroke: var(--ink); }
+
+  /* The needle: a hairline across the rails with a small pointer under the track.
+     .dial__hand is as wide as the track and moves by % of its own width; the rail clips the rest. */
+  .dial__rail { position: absolute; left: -8px; right: -8px; top: 15px; height: 34px; overflow: hidden; pointer-events: none; }
+  .dial__hand { position: absolute; left: 8px; right: 8px; top: 0; bottom: 0; transform: translateX(0%); }
+  .dial__needle { position: absolute; left: 0; top: 0; width: 1px; height: 24px; margin-left: -.5px; background: var(--ink); }
+  .dial__needle::after {
+    content: "";
+    position: absolute; left: -3.5px; top: 25px;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-bottom: 7px solid var(--ink);
+  }
+
+  /* ---------- Numerals: Playfair at display size, fixed-width digit cells ---------- */
+  .dial__face { position: relative; }
+  .cd {
+    display: grid;
+    justify-content: center;
+    align-items: start;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-stretch: 87.5%;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+    color: var(--ink);
+    --cd-dd: 2;
+  }
+  /* Columns are never narrower than their label: the clock row stays centred, so the outer labels keep equal room to the frame */
+  .cd__f { display: flex; flex-direction: column; align-items: center; }
+  .cd__num { display: flex; justify-content: center; line-height: 1.2; text-shadow: var(--cd-press); }
+  .cd__d { display: block; flex: none; width: .53em; height: 1.2em; line-height: 1.2em; text-align: center; }
+  .cd__d--reel {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 84%, transparent);
+    mask-image: linear-gradient(transparent, #000 14%, #000 84%, transparent);
+  }
+  /* Reel rows sit 1em apart (closer than the 1.2em cell), so neighbours stay just out of the window, as on a wheel */
+  .cd__reel { display: block; transform: translateY(-1em); }
+  .cd__reel > span { display: block; height: 1em; line-height: 1.2em; }
+  .cd__colon {
+    display: block;
+    width: .34em; height: 1.2em; line-height: 1.2em;
+    text-align: center;
+    color: var(--graphite);
+    transform: translateY(-.1em) scale(.66);
+    text-shadow: var(--cd-press);
+  }
+  .cd__unit { margin-top: 0; color: var(--graphite); white-space: nowrap; text-indent: .2em; }
+
+  /* Phone: days large on their own row, hours, minutes and seconds below */
+  .cd {
+    grid-template-columns: auto auto auto auto auto;
+    grid-template-areas: "d d d d d" "h c1 m c2 s";
+    row-gap: clamp(14px, 4cqi, 22px);
+    column-gap: clamp(4px, 2.2cqi, 12px);
+  }
+  .cd__f--d { grid-area: d; font-size: min(6rem, 36cqi); font-variation-settings: "opsz" 144; }
+  .cd__f--d .cd__num { position: relative; }
+  .cd__f--h { grid-area: h; }
+  .cd__f--m { grid-area: m; }
+  .cd__f--s { grid-area: s; }
+  .cd__colon--h { grid-area: c1; }
+  .cd__colon--m { grid-area: c2; }
+  .cd__colon--d { display: none; }
+  .cd__f--h, .cd__f--m, .cd__f--s, .cd__colon--h, .cd__colon--m { font-size: min(3.25rem, 19cqi); }
+  /* Labels of the clock row follow the dial's width, so large system text cannot push them into the frame.
+     13px is the floor; narrow dials tighten the tracking and the colons instead (container rules below). */
+  .cd__f--h .cd__unit, .cd__f--m .cd__unit, .cd__f--s .cd__unit { font-size: max(13px, min(var(--t-label), 5.2cqi)); letter-spacing: .14em; text-indent: .14em; }
+  .cd__f--d .cd__unit { margin-top: -.1rem; }
+  /* A fine rule between the day row and the clock row */
+  .cd__f--d::after { content: ""; display: block; width: min(180px, 46cqi); height: 1px; margin-top: clamp(14px, 4cqi, 22px); background: var(--cd-ink-faint); }
+
+  /* Desktop and tablet: one row, D : H : M : S */
+  @container (min-width: 600px) {
+    .cd {
+      grid-template-columns: none;
+      grid-template-areas: none;
+      grid-auto-flow: column;
+      column-gap: .05em;
+      font-size: min(clamp(3.5rem, 1rem + 10vw, 9rem), calc(100cqi / (var(--cd-dd) * .53 + 4.9)));
+    }
+    .cd__f--d, .cd__f--h, .cd__f--m, .cd__f--s, .cd__colon { grid-area: auto; font-size: 1em; font-variation-settings: "opsz" 144; }
+    .cd__colon--d { display: block; }
+    .cd__f--d::after { content: none; }
+    .cd__f--d .cd__unit, .cd__f--h .cd__unit, .cd__f--m .cd__unit, .cd__f--s .cd__unit { margin-top: -.06em; font-size: min(var(--t-label), 2.4cqi); letter-spacing: .2em; text-indent: .2em; }
+  }
+  /* Narrow dials (phones up to about 375px): "Stunden : Minuten : Sekunden" must keep 10px or more to the inner rule.
+     The colons give up part of their track (negative margins keep the glyph centred), the labels tighten. */
+  @container (max-width: 300px) {
+    .cd__f--h .cd__unit, .cd__f--m .cd__unit, .cd__f--s .cd__unit { letter-spacing: .08em; text-indent: .08em; }
+    .cd__colon--h, .cd__colon--m { margin-inline: -.04em; }
+  }
+  @container (max-width: 260px) {
+    .cd { column-gap: 3px; }
+    .cd__f--h .cd__unit, .cd__f--m .cd__unit, .cd__f--s .cd__unit { letter-spacing: .06em; text-indent: .06em; }
+    .cd__colon--h, .cd__colon--m { margin-inline: -.08em; }
+  }
+  /* Very narrow phones (280px): the floor gives way rather than the frame */
+  @container (max-width: 220px) {
+    .cd__f--h .cd__unit, .cd__f--m .cd__unit, .cd__f--s .cd__unit { font-size: min(var(--t-label), 5.6cqi); letter-spacing: .04em; text-indent: .04em; }
+  }
+
+  /* Without JS: one sentence on the dial */
+  .cd__nojs {
+    margin-inline: auto;
+    max-width: 22em;
+    padding-block: clamp(4px, 2cqi, 20px);
+    font: 400 clamp(1.375rem, 1rem + 1.6vw, 2.25rem) / 1.3 var(--f-display);
+    font-stretch: 87.5%;
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
+  }
+
+  /* ---------- Today and after: the same dial, a different face ---------- */
+  .cd-today .heading { padding-block: clamp(6px, 2cqi, 18px) clamp(10px, 2.5cqi, 24px); }
+  .cd-today .heading .caps { font-size: min(var(--t-h2-caps), 11cqi); }
+  .cd-today .heading .script { font-size: min(var(--t-h2-script), 22cqi); }
+  .cd-after__h { display: flex; flex-direction: column; align-items: center; padding-top: clamp(4px, 1.5cqi, 14px); }
+  .cd-after__caps, .cd-after__unit { font-size: min(var(--t-h2-caps), 9.5cqi); text-wrap: balance; }
+  .cd-after__num {
+    display: block;
+    margin-block: .02em .04em;
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-stretch: 87.5%;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-variation-settings: "opsz" 144;
+    font-size: min(clamp(6rem, 2rem + 10vw, 9.5rem), 44cqi);
+    line-height: 1.12;
+    letter-spacing: .02em;
+    text-shadow: var(--cd-press);
+  }
+  /* The countdown has run out: the needle rests on 0 */
+  html[data-phase="today"] .dial__hand,
+  html[data-phase="after"] .dial__hand { transform: translateX(100%) !important; }
+  html:not(.js) .dial__rail { display: none; }
+
+  /* Maker's line, as on the strip: J & S · 11.09.2027 */
+  .dial__mark {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    margin-top: clamp(22px, 4cqi, 40px);
+    font: 400 .8125rem / 1 var(--f-display);
+    font-stretch: 87.5%;
+    font-variant-numeric: lining-nums;
+    letter-spacing: .12em;
+    color: var(--graphite);
+    white-space: nowrap;
+  }
+  .dial__mark .amp { font-size: 1.1em; line-height: 1; }
+  .dial__mark::before, .dial__mark::after { content: ""; width: min(72px, 12cqi); height: 1px; background: var(--cd-ink-faint); }
+
+  /* ---------- Calendar ---------- */
+  .cal {
+    width: min(100%, 1040px);
+    margin-top: clamp(56px, 8vw, 96px);
+    display: flex; flex-direction: column; align-items: center;
+    scroll-margin-top: 24px;
+  }
+  .cal__h { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; margin-bottom: 20px; white-space: nowrap; }
+  .cal__h::before, .cal__h::after { content: ""; flex: 0 1 96px; min-width: 12px; height: 1px; background: var(--cd-ink-faint); }
+  .cal__buttons { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; width: 100%; }
+  .cal__btn {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    min-height: 72px;
+    padding: 14px 20px 14px 22px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    text-align: left;
+    text-decoration: none;
+    transition: background-color .15s, color .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cal__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .cal__label { font: 500 .9375rem / 1.3 var(--f-sans); letter-spacing: .16em; text-transform: uppercase; }
+  .cal__sub { font: 400 .875rem / 1.35 var(--f-sans); color: var(--graphite); transition: color .15s; }
+  .cal__icon { flex: none; width: 20px; height: 20px; }
+  @media (hover: hover) {
+    .cal__btn:hover { background: var(--ink); color: var(--paper); }
+    .cal__btn:hover .cal__sub { color: color-mix(in srgb, var(--paper) 78%, transparent); }
+  }
+  .cal__btn:active { background: var(--ink); color: var(--paper); }
+  .cal__btn:active .cal__sub { color: color-mix(in srgb, var(--paper) 78%, transparent); }
+  .cal__btn:focus-visible { box-shadow: var(--focus); border-radius: 0; }
+  .cal__more { margin-top: 18px; }
+  .cal__more { text-align: center; text-wrap: balance; }
+  .cal__other {
+    display: inline-block; padding: 10px 4px;
+    font: 400 var(--t-body) / 1.4 var(--f-sans);
+    color: var(--ink);
+    text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px;
+    text-decoration-color: var(--cd-ink-soft);
+  }
+  @media (hover: hover) { .cal__other:hover { text-decoration-color: var(--ink); } }
+  .cal__note { max-width: 34em; margin-top: 4px; text-align: center; color: var(--graphite); text-wrap: balance; }
+
+  .cal__buttons { max-width: 520px; }
+  @media (min-width: 920px) {
+    .cal__buttons { max-width: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .cal__btn { min-height: 84px; }
+  }
+}
+
+/* One-time entrance (JS adds .dial--pre only when the dial is still below the fold) */
+@layer states {
+  @media screen {
+    .dial--pre .dial__ticks,
+    .dial--pre .dial__nums,
+    .dial--pre .dial__rail,
+    .dial--pre .cd { opacity: 0; }
+  }
+}

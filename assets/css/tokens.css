@@ -1,0 +1,59 @@
+/* Layout concept: one sheet of Bütten paper. A chrome photobooth slot prints the couple's strip,
+   and every later section is another paper object on that sheet: prints, a postcard, a counter. */
+@layer tokens, base, hero, story, postcard, countdown, footer, states;
+
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    /* paper and ink */
+    --paper: #EFE9DD;      /* Bütten: page background */
+    --card: #FAF7F0;       /* Karton: strip, prints, postcard */
+    --ink: #171513;        /* text and focus rings */
+    --graphite: #5E5A53;   /* secondary text, 5.6:1 on paper */
+    --rule: #DDD4C3;       /* hairlines, decorative only */
+
+    /* photobooth metal */
+    --bezel: #1E2124;
+    --bezel-2: #2E3236;
+    --spec: #8E949A;
+    --steel-lo: #9A9FA4;
+    --steel-hi: #C9CDD1;
+
+    /* light and process */
+    --lamp: #FFD9A0;
+    --flash: #FFF9EE;
+    --dev-cream: #EDE6D6;
+    --postmark: #7A2E2A;
+
+    --f-display: "Playfair", "Playfair Fallback", Georgia, "Times New Roman", serif;
+    --f-script: "Pinyon Script", "Playfair", Georgia, serif;
+    /* La Belle Aurore has every Turkish letter except the dotless ı. Zeyada, by the same designer with the
+       same x-height and baseline, supplies that one glyph, so Turkish handwriting still reads as one pen. */
+    --f-hand: "La Belle Aurore", "Zeyada", "Pinyon Script", Georgia, serif;
+    --f-sans: "Jost", "Jost Fallback", "Avenir Next", Futura, "Helvetica Neue", Arial, sans-serif;
+
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+    --ease-ink: cubic-bezier(.65, 0, .35, 1);
+    --ease-motor: cubic-bezier(.3, .7, .4, 1);
+    --ease-settle: cubic-bezier(.2, .9, .25, 1);
+    --ease-roll: cubic-bezier(.6, 0, .2, 1);
+
+    --u: 8px;
+    --gutter: 16px;
+    --maxw: 1200px;
+    --section-pad: clamp(72px, 12vh, 160px);
+    --shadow-paper: 0 1px 1px rgba(23, 21, 19, .08), 0 10px 28px -10px rgba(23, 21, 19, .28);
+    --shadow-lift: 0 2px 3px rgba(23, 21, 19, .10), 0 24px 48px -18px rgba(23, 21, 19, .38);
+    --focus: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+
+    /* type scale */
+    --t-label: .875rem;
+    --t-body: 1.0625rem;
+    --t-date: clamp(1.125rem, 1rem + .8vw, 1.625rem);
+    --t-h2-caps: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+    --t-h2-script: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+  @media (min-width: 768px) { :root { --gutter: 32px; } }
+  @media (min-width: 1024px) { :root { --gutter: 64px; } }
+}

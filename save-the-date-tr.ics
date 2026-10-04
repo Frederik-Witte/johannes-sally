@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Johannes und Selin//Save the Date//DE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:johannes-selin-hochzeit@save-the-date
+DTSTAMP:20261004T165653Z
+DTSTART;VALUE=DATE:20270911
+DTEND;VALUE=DATE:20270912
+SUMMARY:Johannes & Selin düğünü
+DESCRIPTION:Save the Date. Yer ve saat bilgisini içeren davetiye yakında 
+ gelecek.\nhttps://frederik-witte.github.io/johannes-selin/
+URL:https://frederik-witte.github.io/johannes-selin/
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

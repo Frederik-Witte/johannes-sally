@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Johannes &amp; Selin · Save the Date</title>
+<meta name="wedding-date" content="2027-09-11">
+<script>
+/* Before first paint: mark JS, resolve language and wedding phase (Berlin calendar date). Keep in sync with assets/js/i18n.js. */
+(function () {
+  var d = document.documentElement, L = ['de', 'tr'], l = null, q = null;
+  d.className += ' js';
+  try { q = new URLSearchParams(location.search); var ql = q.get('lang'); if (L.indexOf(ql) > -1) l = ql; } catch (e) {}
+  if (!l) { var h = location.hash.slice(1), m = h.match(/(?:^|&)lang=(\w+)/); if (m && L.indexOf(m[1]) > -1) l = m[1]; else if (L.indexOf(h) > -1) l = h; }
+  if (!l) { try { var s = localStorage.getItem('std-lang'); if (L.indexOf(s) > -1) l = s; } catch (e) {} }
+  if (!l) { var n = (navigator.languages && navigator.languages[0]) || navigator.language || ''; if (/^tr/i.test(n)) l = 'tr'; }
+  l = l || 'de';
+  d.setAttribute('data-lang', l);
+  /* lang stays "de" until i18n.js applies the catalog: the German placeholder text must not take Turkish case rules (EİNLADUNG). */
+  if (l !== 'de') d.className += ' i18n-pending';
+  try {
+    var now = new Date(), qn = q && q.get('now');
+    if (qn && !isNaN(Date.parse(qn))) now = new Date(qn);
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+    var wd = document.querySelector('meta[name="wedding-date"]').content;
+    d.setAttribute('data-phase', day < wd ? 'before' : day === wd ? 'today' : 'after');
+  } catch (e) {}
+})();
+</script>
+<meta name="description" content="Save the Date: Samstag, 11. September 2027. Bitte haltet euch den Tag frei. Die Einladung folgt.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EFE9DD">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<!-- Crawlers never run the language script, so every link (also #tr) gets this one preview: keep it German and Turkish. -->
+<meta property="og:title" content="Johannes &amp; Selin · Save the Date">
+<meta property="og:description" content="Save the Date: Samstag, 11. September 2027. Bitte haltet euch den Tag frei. Lütfen bu günü bize ayırın.">
+<meta property="og:locale" content="de_DE">
+<!-- Link preview: WhatsApp needs absolute URLs built from WEDDING.siteUrl. npm test checks they match. -->
+<meta property="og:image" content="https://frederik-witte.github.io/johannes-selin/assets/img/og-v2.jpg">
+<meta property="og:url" content="https://frederik-witte.github.io/johannes-selin/">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fotostreifen von Johannes und Selin mit dem Datum 11.09.2027">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/playfair-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/pinyon-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css?v=5">
+<link rel="stylesheet" href="assets/css/tokens.css?v=5">
+<link rel="stylesheet" href="assets/css/base.css?v=5">
+<link rel="stylesheet" href="assets/css/hero.css?v=5">
+<link rel="stylesheet" href="assets/css/story.css?v=5">
+<link rel="stylesheet" href="assets/css/postcard.css?v=5">
+<link rel="stylesheet" href="assets/css/countdown.css?v=5">
+<link rel="stylesheet" href="assets/css/footer.css?v=5">
+<!-- Fetch the hero's module graph in parallel instead of one import at a time, so the print starts on slow mobile networks -->
+<link rel="modulepreload" href="assets/js/main.js">
+<link rel="modulepreload" href="assets/js/config.js">
+<link rel="modulepreload" href="assets/js/copy.js">
+<link rel="modulepreload" href="assets/js/i18n.js">
+<link rel="modulepreload" href="assets/js/time.js">
+<link rel="modulepreload" href="assets/js/dates.js">
+<link rel="modulepreload" href="assets/js/fuer.js">
+<link rel="modulepreload" href="assets/js/hero-print.js">
+<link rel="modulepreload" href="assets/js/calpop.js">
+<script type="module" src="assets/js/main.js"></script>
+</head>
+<body>
+<div class="flash" aria-hidden="true"></div>
+<div class="jump-cover" aria-hidden="true"></div>
+
+<!-- 1 Hero: the photobooth has just printed the couple's strip -->
+<header id="start" class="hero">
+  <nav class="lang hero__lang" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+    <button type="button" data-lang="de" lang="de" aria-label="DE: Deutsch" aria-pressed="true">DE</button>
+    <button type="button" data-lang="tr" lang="tr" aria-label="TR: Türkçe" aria-pressed="false">TR</button>
+  </nav>
+
+  <div class="hero__grid">
+    <div class="hero__left">
+      <h1 class="hero__title">
+        <span class="names caps"><span class="names__a" data-name="a">Johannes</span> <span class="names__b"><span class="amp">&amp;</span> <span data-name="b">Selin</span></span></span>
+        <span class="script hero__verb" data-i18n-phase="hero.script">heiraten</span>
+      </h1>
+    </div>
+
+    <div class="hero__booth">
+      <div class="booth-head" aria-hidden="true">
+        <span class="plate" data-i18n="hero.plate">Fotoausgabe</span>
+        <span class="lamps"><i class="lamp"><b class="lamp__on"></b></i><i class="lamp"><b class="lamp__on"></b></i><i class="lamp"><b class="lamp__on"></b></i></span>
+        <span class="sign" data-i18n="hero.sign">Bitte lächeln</span>
+      </div>
+      <div class="slot-wrap">
+        <a class="slot" href="#fotos" aria-label="Fotos ansehen: Fotostreifen mit vier Fotos von Johannes und Selin" data-i18n-attr="aria-label:hero.slot.aria">
+          <span class="slot__bay">
+            <span class="slot__light" aria-hidden="true"></span>
+            <span class="strip" aria-hidden="true">
+              <span class="frame"><img src="assets/img/strip/ring-wange-400.jpg" width="400" height="300" alt="" decoding="async" fetchpriority="high"><span class="frame__dev"></span></span>
+              <span class="frame"><img src="assets/img/strip/kuss-400.jpg" width="400" height="300" alt="" decoding="async" fetchpriority="high"><span class="frame__dev"></span></span>
+              <span class="frame"><img src="assets/img/strip/hand-herz-400.jpg" width="400" height="300" alt="" decoding="async" fetchpriority="high"><span class="frame__dev"></span></span>
+              <span class="frame"><img src="assets/img/strip/umarmung-400.jpg" width="400" height="300" alt="" decoding="async" fetchpriority="high"><span class="frame__dev"></span></span>
+              <span class="strip__stamp"><span class="strip__ink">J <span class="amp">&amp;</span> S · <span data-date="dotted">11.09.2027</span></span><span class="strip__bleed" aria-hidden="true">J <span class="amp">&amp;</span> S · <span data-date="dotted">11.09.2027</span></span></span>
+            </span>
+            <span class="slot__lip" aria-hidden="true"></span>
+            <span class="slot__tray" aria-hidden="true"></span>
+            <span class="slot__glass" aria-hidden="true"></span>
+            <span class="slot__sweep" aria-hidden="true"></span>
+          </span>
+        </a>
+        <button class="coin" type="button" hidden aria-label="Nochmal: Fotostreifen neu drucken" data-i18n-attr="aria-label:hero.coin.aria">
+          <span class="coin__disc" aria-hidden="true"></span>
+          <span class="coin__label" data-i18n="hero.coin">Nochmal</span>
+        </button>
+      </div>
+      <p class="hero__note" aria-hidden="true" data-i18n="hero.note">Bitte nicht knicken.</p>
+    </div>
+
+    <div class="hero__right">
+      <p class="std" lang="en" data-phase-only="before"><span class="caps std__caps" data-i18n="hero.std.caps">Save the</span> <span class="script std__script" data-i18n="hero.std.script">Date</span></p>
+      <p class="dateline caps"><time datetime="2027-09-11" data-date="long">Samstag, 11.&nbsp;September 2027</time></p>
+      <p class="follow label" data-phase-only="before" data-i18n="hero.follow">Einladung folgt</p>
+      <div class="calpop calpop--side" data-phase-only="before">
+        <a class="btn hero__cta calpop__fallback" href="#kalender" data-jump><span data-i18n="hero.cta">Im Kalender eintragen</span><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <button class="btn hero__cta calpop__toggle" type="button" aria-expanded="false" aria-controls="calpop-1" hidden><span data-i18n="hero.cta">Im Kalender eintragen</span><svg class="calpop__chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <div class="calpop__menu" id="calpop-1" hidden>
+          <a class="calpop__item" data-cal="apple" href="save-the-date.ics" type="text/calendar"><span class="calpop__label" data-i18n="cal.apple">Apple Kalender</span><span class="calpop__sub" data-i18n="cal.apple.sub">iPhone, iPad, Mac</span></a>
+          <a class="calpop__item" data-cal="google" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Hochzeit+von+Johannes+%26+Selin&amp;dates=20270911%2F20270912&amp;details=Save+the+Date.+Die+Einladung+mit+Ort+und+Uhrzeit+folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;ctz=Europe%2FBerlin" target="_blank" rel="noopener"><span class="calpop__label" data-i18n="cal.google">Google Kalender</span><span class="calpop__sub" data-i18n="cal.google.sub">Android, Gmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></a>
+          <a class="calpop__item" data-cal="outlook" href="https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&amp;rru=addevent&amp;subject=Hochzeit%20von%20Johannes%20%26%20Selin&amp;body=Save%20the%20Date.%20Die%20Einladung%20mit%20Ort%20und%20Uhrzeit%20folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;startdt=2027-09-11&amp;enddt=2027-09-12&amp;allday=true" target="_blank" rel="noopener"><span class="calpop__label" data-i18n="cal.outlook">Outlook</span><span class="calpop__sub" data-i18n="cal.outlook.sub">Outlook.com, Hotmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="calpop calpop--row" data-phase-only="before">
+      <a class="btn hero__cta calpop__fallback" href="#kalender" data-jump><span data-i18n="hero.cta">Im Kalender eintragen</span><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      <button class="btn hero__cta calpop__toggle" type="button" aria-expanded="false" aria-controls="calpop-2" hidden><span data-i18n="hero.cta">Im Kalender eintragen</span><svg class="calpop__chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="calpop__menu" id="calpop-2" hidden>
+        <a class="calpop__item" data-cal="apple" href="save-the-date.ics" type="text/calendar"><span class="calpop__label" data-i18n="cal.apple">Apple Kalender</span><span class="calpop__sub" data-i18n="cal.apple.sub">iPhone, iPad, Mac</span></a>
+        <a class="calpop__item" data-cal="google" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Hochzeit+von+Johannes+%26+Selin&amp;dates=20270911%2F20270912&amp;details=Save+the+Date.+Die+Einladung+mit+Ort+und+Uhrzeit+folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;ctz=Europe%2FBerlin" target="_blank" rel="noopener"><span class="calpop__label" data-i18n="cal.google">Google Kalender</span><span class="calpop__sub" data-i18n="cal.google.sub">Android, Gmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></a>
+        <a class="calpop__item" data-cal="outlook" href="https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&amp;rru=addevent&amp;subject=Hochzeit%20von%20Johannes%20%26%20Selin&amp;body=Save%20the%20Date.%20Die%20Einladung%20mit%20Ort%20und%20Uhrzeit%20folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;startdt=2027-09-11&amp;enddt=2027-09-12&amp;allday=true" target="_blank" rel="noopener"><span class="calpop__label" data-i18n="cal.outlook">Outlook</span><span class="calpop__sub" data-i18n="cal.outlook.sub">Outlook.com, Hotmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></a>
+      </div>
+    </div>
+  </div>
+  <a class="hero__more" href="#fotos" data-jump><span class="hero__more-label" data-i18n="hero.more">Weiter</span><span class="hero__more-line" aria-hidden="true"></span></a>
+</header>
+
+<main id="inhalt">
+
+  <!-- 2 Story: four prints, one at a time -->
+  <section id="fotos" class="story" aria-labelledby="fotos-h">
+    <h2 id="fotos-h" class="sr-only" data-i18n="story.h2">Vier Fotos</h2>
+    <div class="story__track">
+      <div class="story__seg" data-seg="0" aria-hidden="true"></div>
+      <div class="story__seg" data-seg="1" aria-hidden="true"></div>
+      <div class="story__seg" data-seg="2" aria-hidden="true"></div>
+      <div class="story__seg" data-seg="3" aria-hidden="true"></div>
+      <div class="story__stage">
+        <p class="story__counter label" aria-hidden="true" data-story-counter>Foto 1 / 4</p>
+        <ol class="story__prints">
+          <li class="print" data-photo="ring-wange" data-index="0">
+            <figure class="print__fig">
+              <figcaption class="print__copy">
+                <span class="caps print__caps" data-i18n="story.f1.caps">Wir haben</span>
+                <span class="script print__script" data-i18n="story.f1.script">Ja gesagt.</span>
+              </figcaption>
+              <div class="print__photo">
+                <picture>
+                  <source media="(max-width: 599px)" srcset="assets/img/frame/ring-wange-600.jpg 600w, assets/img/frame/ring-wange-900.jpg 900w" sizes="min(342px, calc(92vw - 16px))">
+                  <img src="assets/img/frame/ring-wange-900.jpg" srcset="assets/img/frame/ring-wange-600.jpg 600w, assets/img/frame/ring-wange-900.jpg 900w, assets/img/frame/ring-wange-1200.jpg 1200w" sizes="(min-width: 1024px) min(564px, 63vh), (min-width: 600px) 440px, min(358px, 92vw)" width="1200" height="1600" loading="lazy" decoding="async" alt="Selin zeigt ihren Verlobungsring, Johannes umarmt sie von hinten. Beide strahlen in die Kamera." data-i18n-attr="alt:alt.ring-wange">
+                </picture>
+                <span class="print__glint" aria-hidden="true" style="--gx: 59.8%; --gy: 46.7%"></span>
+              </div>
+            </figure>
+          </li>
+          <li class="print" data-photo="kuss" data-index="1">
+            <figure class="print__fig">
+              <figcaption class="print__copy">
+                <span class="caps print__caps" data-i18n-phase="story.f2.caps">Jetzt wird</span>
+                <span class="script print__script" data-i18n-phase="story.f2.script">geheiratet.</span>
+              </figcaption>
+              <div class="print__photo">
+                <picture>
+                  <source media="(max-width: 599px)" srcset="assets/img/frame/kuss-600.jpg 600w, assets/img/frame/kuss-900.jpg 900w" sizes="min(342px, calc(92vw - 16px))">
+                  <img src="assets/img/frame/kuss-900.jpg" srcset="assets/img/frame/kuss-600.jpg 600w, assets/img/frame/kuss-900.jpg 900w, assets/img/frame/kuss-1200.jpg 1200w" sizes="(min-width: 1024px) min(564px, 63vh), (min-width: 600px) 440px, min(358px, 92vw)" width="1200" height="1600" loading="lazy" decoding="async" fetchpriority="low" alt="Johannes küsst Selin auf die Wange, sie lacht mit geschlossenen Augen." data-i18n-attr="alt:alt.kuss">
+                </picture>
+                <span class="print__glint" aria-hidden="true" style="--gx: 52.1%; --gy: 58.5%"></span>
+              </div>
+            </figure>
+          </li>
+          <li class="print" data-photo="hand-herz" data-index="2">
+            <figure class="print__fig">
+              <figcaption class="print__copy print__copy--date">
+                <span class="print__on"><span class="label print__small" data-i18n="story.f3.caps">Am</span> <span class="script print__script" data-i18n="story.f3.script">Samstag,</span></span>
+                <span class="caps print__numerals"><time datetime="2027-09-11" data-date="dotted">11.09.2027</time></span>
+              </figcaption>
+              <div class="print__photo">
+                <picture>
+                  <source media="(max-width: 599px)" srcset="assets/img/frame/hand-herz-600.jpg 600w, assets/img/frame/hand-herz-900.jpg 900w" sizes="min(342px, calc(92vw - 16px))">
+                  <img src="assets/img/frame/hand-herz-900.jpg" srcset="assets/img/frame/hand-herz-600.jpg 600w, assets/img/frame/hand-herz-900.jpg 900w, assets/img/frame/hand-herz-1200.jpg 1200w" sizes="(min-width: 1024px) min(564px, 63vh), (min-width: 600px) 440px, min(358px, 92vw)" width="1200" height="1600" loading="lazy" decoding="async" fetchpriority="low" alt="Selin hat die Hand mit dem Verlobungsring aufs Herz gelegt, Johannes hält sie im Arm. Beide lächeln in die Kamera." data-i18n-attr="alt:alt.hand-herz">
+                </picture>
+                <span class="print__glint" aria-hidden="true" style="--gx: 52%; --gy: 72.1%"></span>
+              </div>
+            </figure>
+          </li>
+          <li class="print" data-photo="umarmung" data-index="3">
+            <figure class="print__fig">
+              <figcaption class="print__copy">
+                <span class="caps print__caps" data-i18n-phase="story.f4.caps">Haltet euch den Tag</span>
+                <span class="script print__script" data-i18n-phase="story.f4.script">frei.</span>
+              </figcaption>
+              <div class="print__photo">
+                <picture>
+                  <source media="(max-width: 599px)" srcset="assets/img/frame/umarmung-600.jpg 600w, assets/img/frame/umarmung-900.jpg 900w" sizes="min(342px, calc(92vw - 16px))">
+                  <img src="assets/img/frame/umarmung-900.jpg" srcset="assets/img/frame/umarmung-600.jpg 600w, assets/img/frame/umarmung-900.jpg 900w, assets/img/frame/umarmung-1200.jpg 1200w" sizes="(min-width: 1024px) min(564px, 63vh), (min-width: 600px) 440px, min(358px, 92vw)" width="1200" height="1600" loading="lazy" decoding="async" fetchpriority="low" alt="Johannes umarmt Selin von hinten, beide lächeln in die Kamera." data-i18n-attr="alt:alt.umarmung">
+                </picture>
+              </div>
+            </figure>
+          </li>
+        </ol>
+        <ol class="story__thumbs" aria-hidden="true">
+          <li class="is-active"><img src="assets/img/strip/ring-wange-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></li>
+          <li><img src="assets/img/strip/kuss-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></li>
+          <li><img src="assets/img/strip/hand-herz-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></li>
+          <li><img src="assets/img/strip/umarmung-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Postcard: a note from the couple, with the Save the Date face on the other side -->
+  <section id="post" class="section post" aria-labelledby="post-h">
+    <h2 id="post-h" class="heading"><span class="caps" data-i18n="post.h2.caps">Post für</span> <span class="script" data-i18n="post.h2.script">euch</span></h2>
+    <div class="post__stage">
+      <div class="card" data-side="message">
+        <div class="card__strip strip strip--mini" aria-hidden="true">
+          <span class="frame"><img src="assets/img/strip/ring-wange-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></span>
+          <span class="frame"><img src="assets/img/strip/kuss-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></span>
+          <span class="frame"><img src="assets/img/strip/hand-herz-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></span>
+          <span class="frame"><img src="assets/img/strip/umarmung-400.jpg" width="400" height="300" alt="" loading="lazy" decoding="async"></span>
+          <span class="strip__stamp"><span class="strip__ink">J <span class="amp">&amp;</span> S · <span data-date="dotted">11.09.2027</span></span></span>
+        </div>
+        <div class="card__shadow" aria-hidden="true"></div>
+        <div class="card__body">
+          <div class="card__face card__message">
+            <p class="card__watermark" aria-hidden="true"><span class="card__wm-a" data-name="a">Johannes</span> <span class="card__wm-b"><span class="amp">&amp;</span> <span data-name="b">Selin</span></span></p>
+            <p class="card__kind" aria-hidden="true" data-i18n="post.kind">Postkarte</p>
+            <div class="card__left">
+              <p class="card__date"><time datetime="2027-09-11"><span class="caps card__dmy" data-date="daymonthyear">11.&nbsp;September 2027</span> <span class="label card__weekday" data-date="weekday">Samstag</span></time></p>
+              <p class="card__hand hand" data-i18n-lines="post.msg"><span class="hl">Wir freuen uns riesig</span> <span class="hl">darauf, diesen Tag mit</span> <span class="hl">euch zu feiern. Bis bald!</span> <span class="hl">Alles Liebe,</span> <span class="hl">Johannes und Selin</span></p>
+            </div>
+            <div class="card__divider" aria-hidden="true"></div>
+            <div class="card__right">
+              <div class="card__postage" aria-hidden="true">
+                <span class="card__stamp"><span class="card__perf"><span class="card__art"><img src="assets/img/stamp-ring.jpg" width="336" height="256" alt="" loading="lazy" decoding="async"><span class="card__value caps" data-i18n="post.stamp">Ja</span></span></span></span>
+                <svg class="card__postmark" viewBox="0 0 175 76" focusable="false" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="pm-press" x1="0" y1="0" x2="175" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="rotate(8 138 38)"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".34" stop-color="#fff" stop-opacity=".78"/><stop offset=".7" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity=".82"/></linearGradient>
+                    <pattern id="pm-speck" width="43" height="37" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><g fill="#000"><circle cx="42" cy="29.6" r=".9" fill-opacity=".6"/><circle cx="19.1" cy="0" r=".5" fill-opacity=".6"/><circle cx="42.8" cy="28.3" r=".7" fill-opacity=".6"/><circle cx="37.1" cy="26" r=".7" fill-opacity=".9"/><circle cx="9.1" cy="20.8" r=".5" fill-opacity=".8"/><circle cx="14" cy="23.6" r=".9"/><circle cx="25.3" cy="12.1" r=".7" fill-opacity=".7"/><circle cx="14.4" cy="3.4" r=".7" fill-opacity=".9"/><circle cx="33.7" cy="8.5" r=".7" fill-opacity=".5"/><circle cx="25.2" cy="7.2" r=".4" fill-opacity=".7"/><circle cx="33.4" cy="15.1" r=".7" fill-opacity=".9"/><circle cx="4.6" cy="28.2" r=".7" fill-opacity=".8"/><circle cx="1.9" cy="9.3" r=".5" fill-opacity=".8"/><circle cx="41.5" cy="17.6" r=".7" fill-opacity=".6"/><circle cx="12.2" cy="34.9" r=".3" fill-opacity=".5"/><circle cx="23.1" cy="13" r=".5" fill-opacity=".6"/><circle cx="31" cy="13.6" r=".8" fill-opacity=".9"/><circle cx="14.4" cy="19.7" r=".8" fill-opacity=".7"/><circle cx="41.8" cy="11.1" r="1"/><circle cx="17.2" cy="14.5" r=".8" fill-opacity=".6"/><circle cx="19.9" cy="33.9" r=".9" fill-opacity=".5"/><circle cx="11.3" cy="35.5" r=".4" fill-opacity=".8"/><circle cx="18.2" cy="22.7" r=".9" fill-opacity=".8"/><circle cx="19.3" cy="23.2" r=".8" fill-opacity=".5"/><circle cx="18.2" cy="5.4" r=".5" fill-opacity=".9"/><circle cx="24.7" cy="8.1" r=".6"/><circle cx="21.2" cy="2.7" r=".4" fill-opacity=".6"/><circle cx="42" cy="11.7" r="1" fill-opacity=".7"/><circle cx="34.4" cy="19.5" r=".4" fill-opacity=".8"/><circle cx="39.6" cy="35.2" r=".5" fill-opacity=".5"/><circle cx="37.6" cy="9.7" r="1"/><circle cx="16.1" cy="20.6" r=".3" fill-opacity=".6"/><circle cx="17.9" cy="2.5" r="1" fill-opacity=".5"/><circle cx="14.3" cy="10.5" r=".8" fill-opacity=".9"/><circle cx="28.1" cy="16.4" r="1" fill-opacity=".7"/><circle cx="30.4" cy="21.7" r=".4" fill-opacity=".5"/><circle cx="11.7" cy="23.1" r=".7" fill-opacity=".9"/><circle cx="33.9" cy="5.5" r=".7" fill-opacity=".9"/><circle cx="38.2" cy="33.1" r=".6" fill-opacity=".9"/><circle cx="11.1" cy="3.9" r=".8" fill-opacity=".8"/><circle cx="4.9" cy="8.1" r=".7" fill-opacity=".6"/><circle cx="33.4" cy="21.8" r=".8" fill-opacity=".8"/><circle cx="6.6" cy="7.5" r="1" fill-opacity=".9"/><circle cx="4.7" cy="21.5" r="1" fill-opacity=".9"/><circle cx="42.6" cy="12.5" r=".5" fill-opacity=".9"/><circle cx="36.7" cy="2.8" r="1" fill-opacity=".7"/></g></pattern>
+                    <mask id="pm-ink" maskUnits="userSpaceOnUse" x="0" y="0" width="175" height="76"><rect width="175" height="76" fill="url(#pm-press)"/><rect width="175" height="76" fill="url(#pm-speck)"/><g fill="#000"><ellipse cx="150" cy="16" rx="10" ry="4.5" fill-opacity="0.42"/><ellipse cx="116" cy="63" rx="11" ry="4" fill-opacity="0.36"/><ellipse cx="62" cy="31" rx="14" ry="3.5" fill-opacity=".3"/><ellipse cx="129" cy="29" rx="7" ry="3" fill-opacity="0.24"/><ellipse cx="26" cy="51" rx="12" ry="3.5" fill-opacity="0.34"/><ellipse cx="160" cy="52" rx="6" ry="5" fill-opacity=".3"/><ellipse cx="88" cy="46" rx="9" ry="2.5" fill-opacity="0.26"/></g></mask>
+                    <path id="pm-top" d="M110.6 38 A27.4 27.4 0 0 1 165.4 38"/>
+                    <path id="pm-bot" d="M105.3 38 A32.7 32.7 0 0 0 170.7 38"/>
+                  </defs>
+                  <g mask="url(#pm-ink)" fill="currentColor">
+                    <g fill="none" stroke="currentColor"><circle cx="138" cy="38" r="35.4" stroke-width="1.3"/><circle cx="138" cy="38" r="24.2" stroke-width=".8"/><path d="M114.66 31.6H161.34M114.66 44.4H161.34" stroke-width=".8"/><g stroke-width="1.25" stroke-linecap="round"><path d="M0 26 q 4 -2.6 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0"/><path d="M0 38 q 4 -2.6 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0"/><path d="M0 50 q 4 -2.6 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0"/></g></g>
+                    <circle cx="108" cy="38" r="1.05"/><circle cx="168" cy="38" r="1.05"/>
+                    <text class="card__pm-arc"><textPath href="#pm-top" startOffset="50%" text-anchor="middle">Save the Date</textPath></text>
+                    <text class="card__pm-arc"><textPath href="#pm-bot" startOffset="50%" text-anchor="middle">J &amp; S</textPath></text>
+                    <text class="card__pm-date" x="138" y="40.6" text-anchor="middle" data-date="dotted">11.09.2027</text>
+                  </g>
+                </svg>
+              </div>
+              <p class="card__to"><span class="label card__to-label" data-i18n="post.to.label">An:</span> <span class="hand card__to-name" data-post-to>euch</span></p>
+              <p class="card__follow label" data-phase-only="before" data-i18n="post.follow">Einladung folgt</p>
+            </div>
+          </div>
+          <div class="card__face card__front">
+            <div class="card__photo">
+              <img src="assets/img/frame/ring-wange-600.jpg" srcset="assets/img/frame/ring-wange-600.jpg 600w, assets/img/frame/ring-wange-900.jpg 900w" sizes="(min-width: 1024px) 380px, (min-width: 768px) 340px, min(358px, 92vw)" width="1200" height="1600" alt="" loading="lazy" decoding="async">
+              <p class="script card__std card__std--wall" lang="en">Save the Date</p>
+            </div>
+            <div class="card__band">
+              <p class="script card__std card__std--paper" lang="en">Save the Date</p>
+              <p class="caps card__dotted"><time datetime="2027-09-11" data-date="dotted">11.09.2027</time></p>
+              <p class="caps card__names"><span data-name="a">Johannes</span> <span class="amp">&amp;</span> <span data-name="b">Selin</span></p>
+            </div>
+          </div>
+          <span class="card__shade" aria-hidden="true"></span>
+        </div>
+      </div>
+      <button class="btn card__flip" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.6 6.4A5.6 5.6 0 0 1 12.7 4.2M13.4 9.6A5.6 5.6 0 0 1 3.3 11.8M12.9 1.5v2.9H10M3.1 14.5v-2.9H6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span data-i18n="post.flip">Karte umdrehen</span></button>
+      <p class="sr-only" aria-live="polite" data-card-status></p>
+    </div>
+  </section>
+
+  <!-- 4 Countdown and calendar: a letterpress dial on card stock, then the calendar buttons -->
+  <section id="countdown" class="section countdown">
+    <h2 class="heading cd__heading" data-phase-only="before"><span class="caps" data-i18n="cd.h2.caps">Bis zum</span> <span class="script" data-i18n="cd.h2.script">großen Tag</span></h2>
+    <div class="dial">
+      <div class="dial__scale" aria-hidden="true">
+        <span class="dial__nums"><i style="--x: 0">60</i><i style="--x: .25">45</i><i style="--x: .5">30</i><i style="--x: .75">15</i><i style="--x: 1">0</i></span>
+        <svg class="dial__ticks" viewBox="0 0 600 16" preserveAspectRatio="none" focusable="false">
+          <path class="dial__rails" d="M0 5H600M0 11H600"/>
+          <path d="M10 5V11M20 5V11M30 5V11M40 5V11M60 5V11M70 5V11M80 5V11M90 5V11M110 5V11M120 5V11M130 5V11M140 5V11M160 5V11M170 5V11M180 5V11M190 5V11M210 5V11M220 5V11M230 5V11M240 5V11M260 5V11M270 5V11M280 5V11M290 5V11M310 5V11M320 5V11M330 5V11M340 5V11M360 5V11M370 5V11M380 5V11M390 5V11M410 5V11M420 5V11M430 5V11M440 5V11M460 5V11M470 5V11M480 5V11M490 5V11M510 5V11M520 5V11M530 5V11M540 5V11M560 5V11M570 5V11M580 5V11M590 5V11"/>
+          <path d="M50 2V14M100 2V14M200 2V14M250 2V14M350 2V14M400 2V14M500 2V14M550 2V14"/>
+          <path class="dial__quarters" d="M0 0V16M150 0V16M300 0V16M450 0V16M600 0V16"/>
+        </svg>
+        <span class="dial__rail"><span class="dial__hand" data-cd-hand><span class="dial__needle"></span></span></span>
+      </div>
+      <div class="dial__face">
+        <div class="cd-before" data-phase-only="before">
+          <p class="cd__nojs"><span data-i18n="cd.nojs">Der große Tag: Samstag, 11. September 2027.</span></p>
+          <div class="cd" hidden aria-hidden="true">
+            <div class="cd__f cd__f--d"><span class="cd__num" data-cd="d">00</span><span class="cd__unit label" data-cd-unit="d">Tage</span></div>
+            <span class="cd__colon cd__colon--d">:</span>
+            <div class="cd__f cd__f--h"><span class="cd__num" data-cd="h">00</span><span class="cd__unit label" data-cd-unit="h">Stunden</span></div>
+            <span class="cd__colon cd__colon--h">:</span>
+            <div class="cd__f cd__f--m"><span class="cd__num" data-cd="m">00</span><span class="cd__unit label" data-cd-unit="m">Minuten</span></div>
+            <span class="cd__colon cd__colon--m">:</span>
+            <div class="cd__f cd__f--s"><span class="cd__num" data-cd="s">00</span><span class="cd__unit label" data-cd-unit="s">Sekunden</span></div>
+          </div>
+        </div>
+        <div class="cd-today" data-phase-only="today">
+          <h2 class="heading"><span class="caps" data-i18n="cd.today.caps">Heute ist es</span> <span class="script" data-i18n="cd.today.script">so weit.</span></h2>
+        </div>
+        <div class="cd-after" data-phase-only="after">
+          <h2 class="cd-after__h"><span class="caps cd-after__caps" data-i18n="cd.after.caps">Verheiratet seit</span> <span class="cd-after__num" data-cd-since>0</span> <span class="caps cd-after__unit" data-cd-since-unit>Tagen</span></h2>
+        </div>
+      </div>
+      <p class="dial__mark" aria-hidden="true"><span>J <span class="amp">&amp;</span> S · <span data-date="dotted">11.09.2027</span></span></p>
+    </div>
+    <p class="sr-only" data-cd-sr></p>
+
+    <div id="kalender" class="cal" data-phase-only="before">
+      <h3 class="cal__h label" data-i18n="cal.h">In den Kalender</h3>
+      <div class="cal__buttons">
+        <a class="cal__btn" data-cal="apple" href="save-the-date.ics" type="text/calendar"><span class="cal__text"><span class="cal__label" data-i18n="cal.apple">Apple Kalender</span><span class="cal__sub" data-i18n="cal.apple.sub">iPhone, iPad, Mac</span></span><svg class="cal__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 2.5v10.5M5.5 8.5 10 13l4.5-4.5M3.5 17h13" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <a class="cal__btn" data-cal="google" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Hochzeit+von+Johannes+%26+Selin&amp;dates=20270911%2F20270912&amp;details=Save+the+Date.+Die+Einladung+mit+Ort+und+Uhrzeit+folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;ctz=Europe%2FBerlin" target="_blank" rel="noopener"><span class="cal__text"><span class="cal__label" data-i18n="cal.google">Google Kalender</span><span class="cal__sub" data-i18n="cal.google.sub">Android, Gmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></span><svg class="cal__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7 4.5h8.5V13M15.5 4.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <a class="cal__btn" data-cal="outlook" href="https://outlook.live.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&amp;rru=addevent&amp;subject=Hochzeit%20von%20Johannes%20%26%20Selin&amp;body=Save%20the%20Date.%20Die%20Einladung%20mit%20Ort%20und%20Uhrzeit%20folgt.%0Ahttps%3A%2F%2Ffrederik-witte.github.io%2Fjohannes-selin%2F&amp;startdt=2027-09-11&amp;enddt=2027-09-12&amp;allday=true" target="_blank" rel="noopener"><span class="cal__text"><span class="cal__label" data-i18n="cal.outlook">Outlook</span><span class="cal__sub" data-i18n="cal.outlook.sub">Outlook.com, Hotmail</span><span class="sr-only" data-i18n="cal.newtab">(öffnet in neuem Tab)</span></span><svg class="cal__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7 4.5h8.5V13M15.5 4.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      </div>
+      <p class="cal__more"><a class="cal__other" data-cal="file" href="save-the-date.ics" type="text/calendar" data-i18n="cal.other">Anderer Kalender: Kalenderdatei herunterladen</a></p>
+      <p class="cal__note" data-i18n="cal.note">Ganztägig am Samstag, 11. September 2027. Ort und Uhrzeit folgen mit der Einladung.</p>
+    </div>
+  </section>
+</main>
+
+<!-- 6 Footer -->
+<footer class="foot" aria-labelledby="foot-h">
+  <div class="foot__grid">
+    <!-- The kiss print. Phones write the script on its wall; desktop sets it on the paper beside it. -->
+    <div class="foot__print" aria-hidden="true">
+      <div class="foot__card">
+        <div class="foot__photo">
+          <img src="assets/img/frame/kuss-600.jpg" srcset="assets/img/frame/kuss-600.jpg 600w, assets/img/frame/kuss-900.jpg 900w" sizes="(min-width: 1024px) min(484px, 52vh), min(384px, calc(100vw - 48px))" width="1200" height="1600" alt="" loading="lazy" decoding="async">
+          <p class="script foot__ink" data-i18n="footer.script">Fortsetzung folgt.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot__copy">
+      <h2 id="foot-h" class="script foot__script" data-i18n="footer.script">Fortsetzung folgt.</h2>
+      <p class="foot__line" data-i18n-phase="footer.line">Die Einladung mit allen Details kommt bald.</p>
+      <p class="caps foot__names"><span class="foot__name" data-name="a">Johannes</span> <span class="foot__and"><span class="amp">&amp;</span> <span data-name="b">Selin</span></span></p>
+      <p class="caps foot__date"><time datetime="2027-09-11" data-date="dotted">11.09.2027</time></p>
+      <div class="lang foot__lang" role="group" aria-label="Sprache" data-i18n-attr="aria-label:lang.label">
+        <button type="button" data-lang="de" lang="de" aria-label="DE: Deutsch" aria-pressed="true">DE</button>
+        <button type="button" data-lang="tr" lang="tr" aria-label="TR: Türkçe" aria-pressed="false">TR</button>
+      </div>
+      <p class="foot__contact" hidden data-contact></p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

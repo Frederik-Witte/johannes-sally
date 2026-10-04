@@ -1,0 +1,473 @@
+/* Postcard "Post für euch": a real postcard lying on the paper, the couple's strip tucked under its corner.
+   The message side shows first; the Save the Date face is printed on the back.
+   The CSS default is the final, readable state. Without JS the back is shown below as its own print.
+   postcard.js adds the drop, the postmark thump, the handwriting ink wipes and a Safari-safe 2D flip. */
+@layer postcard {
+  .post {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(40px, 6vw, 72px);
+  }
+
+  /* One column as wide as the card: the card, then the flip button aligned to its right edge */
+  .post__stage {
+    --card-w: min(358px, 100%);
+    width: 100%;
+    display: grid;
+    grid-template-columns: var(--card-w);
+    justify-content: center;
+    row-gap: 28px;
+    padding-bottom: 28px;
+  }
+
+  .card {
+    --tilt: -1deg;
+    --drop-rot: calc(-6deg - var(--tilt));
+    --strip-w: 84px;                 /* width of the mini strip */
+    --hand: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+    position: relative;
+    width: 100%;
+    rotate: var(--tilt);
+  }
+
+  /* ---------- Paper ---------- */
+  .card__body {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 56px;
+    container-type: inline-size;
+  }
+  .card__face {
+    --pad: 5.5cqi;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    overflow: clip;   /* not a scroll container, so the sheet grows with large text instead of cutting it */
+    min-width: 0;
+    border-radius: 2px;
+    background:
+      linear-gradient(152deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 36%),
+      linear-gradient(332deg, rgba(23, 21, 19, .04), rgba(23, 21, 19, 0) 42%),
+      var(--card);
+    /* Without JS each face is its own sheet with its own shadow */
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .8),
+      inset 0 0 0 .5px rgba(23, 21, 19, .1),
+      0 1px 1.5px rgba(23, 21, 19, .14),
+      2px 16px 30px -12px rgba(23, 21, 19, .3);
+  }
+  /* Card stock is smoother than the Bütten page: the same grain tile, lighter */
+  .card__face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: url("../img/grain.png") 0 0 / 256px repeat;
+    opacity: .7;
+    mix-blend-mode: multiply;
+  }
+  .card__shadow,
+  .card__shade { display: none; }
+
+  /* ---------- The couple's strip, tucked under the lower left corner ---------- */
+  .card .card__strip {
+    --W: var(--strip-w);
+    position: absolute;
+    z-index: 0;
+    left: 60px;
+    top: calc(100% - 20px);
+    bottom: auto;
+    width: var(--W);
+    height: calc(var(--W) * 3.06);
+    margin: 0;
+    translate: -50% -50%;
+    rotate: -14deg;
+    box-shadow:
+      0 0 0 .5px rgba(23, 21, 19, .08),
+      0 1px 1.5px rgba(23, 21, 19, .2),
+      1px 8px 16px -6px rgba(23, 21, 19, .32);
+  }
+
+  /* ---------- Message side: phone portrait 2:3 ---------- */
+  .card__message {
+    aspect-ratio: 2 / 3;
+    padding: var(--pad);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto 1fr auto auto auto;
+    grid-template-areas:
+      "kind   kind"
+      "date   post"
+      "hand   hand"
+      ".      ."
+      "rule   rule"
+      "to     to"
+      "follow follow";
+    column-gap: 12px;
+  }
+  .card__left,
+  .card__right { display: contents; }
+
+  .card__watermark {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 18%;
+    font-family: var(--f-script);
+    font-size: 20cqi;
+    line-height: .95;
+    white-space: nowrap;
+    color: rgba(23, 21, 19, .06);
+    color: color-mix(in srgb, var(--ink) 6%, transparent);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .55);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .card__wm-a,
+  .card__wm-b { display: block; }
+  .card__wm-b { margin-left: .5em; }
+  .card__watermark .amp { font-size: .82em; line-height: 1; margin-right: .06em; }
+
+  /* Printed on every German postcard back */
+  .card__kind {
+    grid-area: kind;
+    justify-self: center;
+    margin-bottom: 5cqi;
+    font: 500 12px / 1 var(--f-sans);
+    letter-spacing: .34em;
+    text-indent: .34em;
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .card__date { grid-area: date; align-self: start; min-width: 0; }
+  .card__date time { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+  .card__dmy {
+    font-size: clamp(1.125rem, 1rem + .8vw, 1.5rem);
+    font-optical-sizing: auto;
+    letter-spacing: .04em;
+    line-height: 1.08;
+  }
+  .card__weekday { color: var(--graphite); line-height: 1; }
+
+  /* Handwriting on ruled lines. The rule sits just under the baseline of La Belle Aurore
+     (its baseline lands .925em into a 1.55em line), so the pen rests on it. */
+  .card__hand,
+  .card__to {
+    --rules: linear-gradient(to bottom, transparent calc(1.55em - 1px), var(--rule) calc(1.55em - 1px)) 0 -.57em / 100% 1.55em repeat-y;
+    font-family: var(--f-hand);
+    font-size: var(--hand);
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--ink);
+    text-shadow: 0 0 .6px rgba(23, 21, 19, .3);
+  }
+  .card__hand {
+    grid-area: hand;
+    margin-top: 4cqi;
+    background: var(--rules);
+  }
+  .card__hand .hl {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .card__divider {
+    grid-area: rule;
+    height: 1px;
+    margin: 5cqi 0 3cqi;
+    background: var(--rule);
+  }
+
+  .card__to {
+    grid-area: to;
+    min-height: 3.1em;
+    background: var(--rules);
+    overflow-wrap: anywhere;
+  }
+  .card__to-label { margin-right: .35em; color: var(--graphite); text-shadow: none; }
+  .card__to-name { display: inline-block; max-width: 100%; padding-right: .1em; }
+
+  .card__follow {
+    grid-area: follow;
+    justify-self: start;
+    margin-top: 3cqi;
+    color: var(--graphite);
+  }
+
+  /* ---------- Stamp: perforated, on bright gummed paper, slightly askew ---------- */
+  .card__postage {
+    --sw: 63px;                       /* multiples of the 7px perforation pitch */
+    --sh: 49px;
+    --pm: .8;                         /* postmark scale */
+    grid-area: post;
+    justify-self: end;
+    position: relative;
+    width: var(--sw);
+    height: var(--sh);
+    margin: 0 3px 30px 0;
+  }
+  .card__stamp {
+    position: absolute;
+    inset: 0;
+    rotate: 2.4deg;
+    filter: drop-shadow(0 .5px .4px rgba(23, 21, 19, .34)) drop-shadow(.5px 1.5px 2px rgba(23, 21, 19, .14));
+  }
+  .card__perf {
+    --P: 7px;
+    --R: 2.1px;
+    --perf:
+      linear-gradient(#000 0 0) 50% 50% / calc(100% - 2 * var(--R)) calc(100% - 2 * var(--R)) no-repeat,
+      radial-gradient(circle at 50% 50%, #0000 var(--R), #000 calc(var(--R) + .45px)) calc(var(--P) / -2) calc(var(--P) / -2) / var(--P) var(--P) repeat;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, .62), rgba(255, 255, 255, .62)), var(--card);
+    -webkit-mask: var(--perf);
+    mask: var(--perf);
+  }
+  .card__art {
+    position: absolute;
+    inset: calc(var(--R) + 3.2px);
+    overflow: hidden;
+    background: var(--bezel);
+  }
+  /* Printed in one ink: no pure black, a fine line screen, an engraved frame line */
+  .card__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(.86) brightness(1.18);
+    /* Own layer: iOS Safari drops images inside rotated, clipped frames otherwise. */
+    will-change: transform;
+  }
+  .card__art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: repeating-linear-gradient(0deg, rgba(250, 247, 240, .07) 0 .5px, transparent .5px 1.25px);
+    box-shadow: inset 0 0 0 1px rgba(23, 21, 19, .6), inset 0 0 0 1.5px rgba(250, 247, 240, .5);
+  }
+  /* The value sits in a paper-coloured corner cut out of the picture */
+  .card__value {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    padding: 4px 5px 3px 4px;
+    background: var(--card);
+    box-shadow: inset -.5px -.5px 0 rgba(23, 21, 19, .35);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: .05em;
+  }
+
+  /* ---------- Postmark: rubber stamp ink, pressed through onto the stamp ---------- */
+  .card__postmark {
+    position: absolute;
+    width: calc(175px * var(--pm));
+    height: calc(76px * var(--pm));
+    /* circle centre 14.4 units left of the stamp: 30% of the ring overlaps the stamp's left edge */
+    left: calc(-152.4px * var(--pm));
+    top: calc(var(--sh) + 4px - 38px * var(--pm));
+    overflow: visible;
+    color: var(--postmark);
+    opacity: .85;
+    mix-blend-mode: multiply;
+    rotate: -9deg;
+    transform-origin: calc(138px * var(--pm)) calc(38px * var(--pm));
+    pointer-events: none;
+  }
+  .card__pm-arc { font: 500 7.4px var(--f-sans); letter-spacing: .16em; text-transform: uppercase; }
+  .card__pm-date { font: 500 7.3px var(--f-sans); letter-spacing: .05em; font-variant-numeric: lining-nums; }
+
+  /* ---------- Front: the Save the Date face ---------- */
+  .card__front {
+    aspect-ratio: 2 / 3;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    rotate: 2.5deg;   /* without JS it lies below the card as a second print */
+  }
+  .card__photo {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--dev-cream);
+  }
+  .card__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(.06);
+    /* Own layer: iOS Safari drops images inside rotated, clipped frames otherwise. */
+    will-change: transform;
+  }
+  /* Ink on the white wall above the couple, never white type on a photo */
+  .card__std--wall {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 4%;
+    height: 18%;
+    display: grid;
+    place-items: center;
+    font-size: clamp(2.75rem, 12.5cqi, 4rem);
+    line-height: 1;
+    color: var(--ink);
+  }
+  .card__band {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 48px;
+    padding: 4px var(--pad);
+    text-align: center;
+  }
+  .card__std--paper { display: none; }
+  .card__dotted {
+    font-size: 1.5rem;
+    letter-spacing: .07em;
+    line-height: 1;
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+  .card__band-long { line-height: 1; }
+  .card__names { display: none; }
+
+  /* ---------- Flip button ---------- */
+  .card__flip { position: relative; z-index: 1; justify-self: end; gap: 10px; padding-inline: 16px; letter-spacing: .1em; }
+  .card__flip svg { transition: transform .3s var(--ease-out-expo); }
+  .card[data-side="front"] ~ .card__flip svg { transform: scaleX(-1); }
+
+  /* ---------- With JS: both faces stacked on one card, the shadow on its own static underlay ---------- */
+  html.js .card__body { aspect-ratio: 2 / 3; gap: 0; grid-template-areas: "face"; }
+  html.js .card__face {
+    grid-area: face;
+    aspect-ratio: auto;
+    rotate: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), inset 0 0 0 .5px rgba(23, 21, 19, .1);
+  }
+  html.js .card[data-side="message"] .card__front,
+  html.js .card[data-side="front"] .card__message { visibility: hidden; }
+  html.js .card__shadow {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 .5px rgba(23, 21, 19, .05),
+      0 1px 1.5px rgba(23, 21, 19, .16),
+      0 4px 8px -2px rgba(23, 21, 19, .1),
+      2px 18px 30px -12px rgba(23, 21, 19, .3),
+      6px 44px 64px -28px rgba(23, 21, 19, .3);
+  }
+  /* Darkens the card while it turns edge-on during the flip */
+  html.js .card__shade {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(23, 21, 19, .08), rgba(23, 21, 19, .34));
+  }
+  html.js .post.is-ready .card__body { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+  /* Pre-entrance state, set by postcard.js only while the card is still below the viewport */
+  html.js .post.is-pending .card { opacity: 0; transform: translateY(-40px) rotate(var(--drop-rot)); }
+  html.js .post.is-pending .card__shadow { opacity: .4; transform: translateY(26px) scale(1.03); }
+  html.js .post.is-pending .card__postmark { opacity: 0; transform: scale(1.4); }
+  html.js .post.is-unwritten .card__hand .hl,
+  html.js .post.is-unwritten .card__to-name { clip-path: inset(-.5em calc(100% + .5em) -.5em -.5em); }
+
+  /* ---------- Small phones: the flip button goes below the strip ---------- */
+  /* Narrow phones: the button would touch the strip, so it moves below it */
+  @media (max-width: 389px) {
+    .post__stage { padding-bottom: 0; }
+    .card__flip { justify-self: center; margin-top: 96px; }
+  }
+  @media (max-width: 359px) {
+    .card__flip { justify-self: stretch; }
+    .card__kind { display: none; }
+    .card__hand { margin-top: 3cqi; }
+    .card__divider { margin: 3.5cqi 0 2cqi; }
+  }
+
+  /* ---------- Tablet and up: landscape 3:2 with the classic divided back ---------- */
+  @media (min-width: 768px) {
+    .post__stage { --card-w: min(680px, 100%); padding-bottom: 64px; row-gap: 32px; }
+    .card { --tilt: -1.5deg; --strip-w: 120px; }
+    .card .card__strip { left: 104px; top: calc(100% - 34px); }
+    html.js .card__body,
+    .card__message,
+    .card__front { aspect-ratio: 3 / 2; }
+
+    .card__message {
+      --pad: 5cqi;
+      --gap: 3.4cqi;
+      padding-top: calc(var(--pad) + 18px);
+      grid-template-columns: calc(55cqi - var(--pad) - var(--gap)) calc(45cqi - var(--pad) - var(--gap));
+      grid-template-rows: minmax(0, 1fr);
+      grid-template-areas: "left right";
+      column-gap: calc(2 * var(--gap));
+    }
+    .card__left { grid-area: left; display: flex; flex-direction: column; min-width: 0; }
+    .card__right { grid-area: right; display: flex; flex-direction: column; min-width: 0; }
+    .card__kind {
+      position: absolute;
+      top: calc(var(--pad) * .75);
+      left: 55cqi;
+      translate: -50% 0;
+      margin: 0;
+    }
+    .card__divider {
+      position: absolute;
+      left: 55cqi;
+      top: calc(var(--pad) * .75 + 26px);
+      bottom: var(--pad);
+      width: 1px;
+      height: auto;
+      margin: 0;
+    }
+    .card__hand { margin-top: 4.5cqi; }
+    .card__postage { --sw: 91px; --sh: 70px; --pm: 1; align-self: flex-end; margin: 0 3px 0 0; }
+    .card__postmark { top: calc(var(--sh) * .62 - 38px * var(--pm)); }
+    .card__value { font-size: 14px; padding: 5px 6px 4px 5px; }
+    .card__to { margin-top: auto; }
+    .card__follow { margin-top: 3.5cqi; align-self: flex-start; }
+
+    .card__watermark { flex-direction: row; gap: .18em; padding-top: 7%; font-size: 12.5cqi; }
+    .card__wm-b { margin-left: 0; }
+
+    .card__front { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); }
+    .card__photo { aspect-ratio: auto; height: 100%; }
+    .card__std--wall { display: none; }
+    .card__band { gap: 2.4cqi; padding: var(--pad); }
+    .card__std--paper { display: block; font-size: min(4rem, 7.8cqi); line-height: 1; margin-bottom: .6cqi; }
+    .card__dotted { font-size: min(3.5rem, 7.2cqi); letter-spacing: .05em; }
+    .card__names { display: block; font-size: 1rem; letter-spacing: .2em; line-height: 1.2; }
+  }
+
+  @media (min-width: 1024px) {
+    .post__stage { --card-w: min(760px, 70vw); padding-bottom: 80px; }
+    .card { --strip-w: 150px; }
+    .card .card__strip { left: -4px; top: calc(100% - 66px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card__flip svg { transition: none; }
+  }
+}

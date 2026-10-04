@@ -1,0 +1,138 @@
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: clip; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--paper) url("../img/grain.png") 0 0 / 256px repeat;
+    color: var(--ink);
+    font: 400 var(--t-body) / 1.6 var(--f-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  /* iOS 15 has no overflow: clip. Hidden on body alone moves to the viewport, so body never becomes a
+     scroll container and the sticky story keeps working. */
+  @supports not (overflow: clip) {
+    body { overflow-x: hidden; }
+  }
+  h1, h2, h3, p, figure, ol, ul { margin: 0; }
+  ol, ul { padding: 0; list-style: none; }
+  img { display: block; max-width: 100%; height: auto; }
+  button { font: inherit; color: inherit; }
+  a { color: inherit; }
+  [hidden] { display: none !important; }
+
+  :focus { outline: none; }
+  :focus-visible { outline: none; box-shadow: var(--focus); border-radius: 2px; }
+
+  .sr-only {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+
+  /* Type roles */
+  .caps {
+    font-family: var(--f-display);
+    font-weight: 400;
+    font-stretch: 87.5%;
+    font-variant-numeric: lining-nums;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    line-height: .92;
+  }
+  .script {
+    font-family: var(--f-script);
+    font-weight: 400;
+    line-height: .8;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .hand { font-family: var(--f-hand); font-weight: 400; line-height: 1.55; }
+  .label {
+    font-family: var(--f-sans);
+    font-weight: 500;
+    font-size: var(--t-label);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .amp { font-family: var(--f-display); font-size: 1.15em; line-height: 0; letter-spacing: 0; }
+  .num { font-variant-numeric: lining-nums proportional-nums; }
+
+  /* Paired heading: caps line with a script word tucked under it */
+  .heading { display: flex; flex-direction: column; align-items: center; text-align: center; text-wrap: balance; }
+  .heading .caps { font-size: var(--t-h2-caps); }
+  .heading .script { font-size: var(--t-h2-script); margin-top: -.02em; }
+
+  /* Buttons: outlined, quiet, large */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    min-height: 56px; padding: 0 28px;
+    border: 1px solid var(--ink); border-radius: 0;
+    background: transparent; color: var(--ink);
+    font: 500 .9375rem / 1.2 var(--f-sans); letter-spacing: .18em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: background-color .15s, color .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  @media (hover: hover) {
+    .btn:hover { background: var(--ink); color: var(--paper); }
+  }
+  .btn:active { background: var(--ink); color: var(--paper); }
+  .btn[disabled] { opacity: .45; cursor: default; }
+
+  /* Language switch: in the flow, never fixed */
+  .lang { display: flex; gap: 0; }
+  .lang button {
+    min-width: 48px; min-height: 48px; padding: 0 6px;
+    background: none; border: 0; cursor: pointer;
+    font: 500 .875rem / 1 var(--f-sans); letter-spacing: .2em; text-indent: .2em;
+    color: var(--graphite);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lang button[aria-pressed="true"] { color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+  /* Switching needs main.js; without it the buttons would do nothing. */
+  html:not(.js) .lang { display: none; }
+
+  .section { padding-block: var(--section-pad); padding-inline: var(--gutter); }
+  .container { max-width: var(--maxw); margin-inline: auto; }
+
+  /* Full-page flash, used only where a photo is taken */
+  .flash {
+    position: fixed; inset: 0; z-index: 50;
+    background: var(--flash); opacity: 0; pointer-events: none;
+  }
+  /* Paper cover for long in-page jumps */
+  .jump-cover {
+    position: fixed; inset: 0; z-index: 49;
+    background: var(--paper) url("../img/grain.png") 0 0 / 256px repeat;
+    opacity: 0; pointer-events: none;
+  }
+
+  /* Language swap before first paint: hide until the catalog is applied, failsafe after 3s
+     (on slow mobile links an earlier reveal only flashes the German placeholder text). */
+  html.i18n-pending body { opacity: 0; animation: i18n-reveal 0s 3s forwards; }
+  @keyframes i18n-reveal { to { opacity: 1; } }
+  main, header.hero, footer.foot { transition: opacity .1s linear; }
+  html.lang-swap main, html.lang-swap header.hero, html.lang-swap footer.foot { opacity: 0; }
+
+  /* Turkish script lines need the full Turkish alphabet; Pinyon has it. */
+  :lang(tr) .script { font-family: var(--f-script); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.lang-swap main, html.lang-swap header.hero, html.lang-swap footer.foot { opacity: 1; }
+    main, header.hero, footer.foot { transition: none; }
+  }
+}
+
+/* Phase states: the HTML is written for "before"; other phases hide or swap pieces. */
+@layer states {
+  html[data-phase="today"] [data-phase-only="before"],
+  html[data-phase="after"] [data-phase-only="before"] { display: none !important; }
+  html:not([data-phase="after"]) [data-phase-only="after"] { display: none !important; }
+  html:not([data-phase="today"]) [data-phase-only="today"] { display: none !important; }
+}

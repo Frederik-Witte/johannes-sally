@@ -1,0 +1,253 @@
+/* Story "Vier Fotos": the four strip frames as big photographic prints on card.
+   Default (no JS, reduced motion): the prints are stacked, the copy sits on the paper above each one.
+   .is-sticky (added by story.js): a pinned stage shows one print at a time; scroll picks the frame,
+   time drives the motion. Every state below is a final, readable state: JS only animates into it. */
+@layer story {
+  .story {
+    --b: 8px;                                            /* card border around the photo */
+    --copy-caps: clamp(1.75rem, 1.2rem + 2vw, 2.25rem);
+    --copy-script: clamp(2.75rem, 2rem + 3vw, 3.5rem);
+    position: relative;
+    padding: var(--section-pad) var(--gutter);
+  }
+  /* The section only takes focus as a jump target; it is not a control. */
+  .story:focus-visible { box-shadow: none; }
+  .story__seg, .story__counter, .story__thumbs { display: none; }
+
+  /* ---------- Copy: caps with a script line tucked under it ---------- */
+  .print__fig { display: flex; flex-direction: column; align-items: center; }
+  .print__copy {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    padding-bottom: 18px;
+    color: var(--ink);
+  }
+  .print__caps { display: block; font-size: var(--copy-caps); text-wrap: balance; }
+  .print__script {
+    display: block;
+    font-size: var(--copy-script);
+    margin-top: -.14em;
+    padding: 0 .12em .06em;
+    position: relative; z-index: 1;
+  }
+  :lang(tr) .print__script { margin-top: -.1em; }
+  /* Frame 3: "Am Samstag," on one line, the numerals under it. A label never breaks inside itself:
+     when the pair does not fit, the weekday moves under it. */
+  .print__on { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; column-gap: .55em; row-gap: 0; }
+  .print__on .print__script { margin-top: 0; }
+  /* At 320px "Büyük gün Cumartesi," still fits one line: the weekday gives up a few percent. */
+  .print__copy--date .print__script { font-size: min(var(--copy-script), 13vw); }
+  .print__small { display: block; color: var(--ink); white-space: nowrap; }
+  .print__numerals {
+    display: block;
+    font-size: 2.5rem;
+    font-variant-numeric: lining-nums proportional-nums;
+    font-variation-settings: "opsz" 144;
+    letter-spacing: .03em;
+    line-height: 1;
+    margin-top: .02em;
+  }
+  .print__numerals time { font: inherit; }
+
+  /* ---------- The print: a photograph on card, with paper tooth and a soft sheen ---------- */
+  .print { --rot: -1deg; }
+  .print:nth-child(2) { --rot: .6deg; }
+  .print:nth-child(3) { --rot: -.4deg; }
+  .print:nth-child(4) { --rot: .8deg; }
+
+  .print__photo {
+    position: relative;
+    display: block;
+    width: min(358px, 100%);
+    border: var(--b) solid transparent;
+    background: var(--card) url("../img/grain.png") 0 0 / 256px repeat;
+    overflow: hidden;
+    rotate: var(--rot);
+    box-shadow:
+      0 0 0 .5px rgba(23, 21, 19, .07),
+      0 1px 1px rgba(23, 21, 19, .08),
+      0 4px 8px -4px rgba(23, 21, 19, .14),
+      0 22px 44px -22px rgba(23, 21, 19, .42);
+  }
+  .print__photo picture { display: block; }
+  .print__photo img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    background: var(--dev-cream);
+    /* Own layer: iOS Safari drops a non-composited image inside a rotated, clipped frame. */
+    will-change: transform;
+  }
+  /* Photographic grain, a soft sheen across the emulsion and the edge where photo meets card */
+  .print__photo::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, 0) 34%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, .05)),
+      url("../img/grain.png") 0 0 / 256px repeat;
+    box-shadow: inset 0 0 0 1px rgba(23, 21, 19, .07), inset 0 1px 3px rgba(23, 21, 19, .10);
+  }
+  /* Ring glint: a bloom of light on the engagement ring. Invisible unless story.js plays it. */
+  .print__glint {
+    --gs: max(18px, 5cqi);
+    position: absolute; z-index: 1;
+    left: var(--gx); top: var(--gy);
+    width: var(--gs); height: var(--gs);
+    margin: calc(var(--gs) / -2) 0 0 calc(var(--gs) / -2);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 1) 0 9%, rgba(255, 255, 255, .7) 18%, rgba(255, 255, 255, .22) 38%, rgba(255, 255, 255, 0) 68%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Light adds to the photo (plain blending where unsupported). Only the print on screen pays for it. */
+  .story.is-sticky .print.is-active .print__glint { mix-blend-mode: plus-lighter; }
+
+  /* ---------- Stacked layout (no JS, reduced motion) ---------- */
+  .story__prints { display: flex; flex-direction: column; align-items: center; gap: clamp(64px, 11vh, 112px); }
+  .print { width: 100%; display: flex; justify-content: center; }
+  .print__fig { width: 100%; }
+
+  @media (min-width: 1024px) {
+    .story { --b: 14px; }
+    .story__prints {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 440px));
+      justify-content: center;
+      align-items: start;
+      column-gap: clamp(72px, 9vw, 160px);
+      row-gap: clamp(72px, 11vh, 128px);
+      max-width: var(--maxw);
+      margin-inline: auto;
+    }
+    /* Laid out like prints on a table: the right column sits lower */
+    .print:nth-child(even) { padding-top: clamp(140px, 22vh, 240px); }
+    .print__photo { width: 100%; }
+    .print__copy { padding-bottom: 24px; }
+  }
+
+  /* ---------- Sticky mode: a pinned stage, one print at a time ---------- */
+  .story.is-sticky { padding: 0; }
+  .story.is-sticky .story__track { position: relative; height: 320vh; height: 320svh; }
+  .story.is-sticky .story__seg { display: block; position: absolute; left: 0; right: 0; height: 25%; pointer-events: none; }
+  .story.is-sticky .story__seg[data-seg="0"] { top: 0; }
+  .story.is-sticky .story__seg[data-seg="1"] { top: 25%; }
+  .story.is-sticky .story__seg[data-seg="2"] { top: 50%; }
+  .story.is-sticky .story__seg[data-seg="3"] { top: 75%; }
+
+  .story.is-sticky .story__stage {
+    --chrome: 96px;   /* stage padding, counter row and its gap */
+    position: sticky; top: 0;
+    height: 100vh; height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px var(--gutter) 28px;
+    /* Light falling on the table, brightest under the print. Fades out before the stage edges. */
+    background: radial-gradient(ellipse 62% 48% at 50% 54%, color-mix(in srgb, var(--card) 70%, transparent), transparent 72%);
+  }
+  .story.is-sticky .story__counter {
+    display: block; flex: none;
+    height: 24px; line-height: 24px;
+    margin-bottom: 16px;
+    color: var(--graphite);
+    white-space: nowrap;
+  }
+  .story.is-sticky .story__prints { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; max-width: none; margin: 0; gap: 0; }
+  .story.is-sticky .print { grid-area: 1 / 1; padding: 0; opacity: 0; pointer-events: none; }
+  .story.is-sticky .print__fig { flex: none; width: 100%; }
+  .story.is-sticky .print.is-active { opacity: 1; z-index: 1; }
+  .story.is-sticky .print__copy { min-height: var(--copy-h, 124px); justify-content: flex-end; }
+  .story.is-measuring .print__copy { min-height: 0 !important; }
+  .story.is-sticky .print__photo {
+    width: min(358px, 100%, calc((100vh - var(--copy-h, 124px) - var(--chrome)) * .75));
+    width: min(358px, 100%, calc((100svh - var(--copy-h, 124px) - var(--chrome)) * .75));
+    container-type: inline-size;
+  }
+  @media (min-width: 600px) {
+    .story.is-sticky .print__photo {
+      width: min(440px, 100%, calc((100vh - var(--copy-h, 124px) - var(--chrome)) * .75));
+      width: min(440px, 100%, calc((100svh - var(--copy-h, 124px) - var(--chrome)) * .75));
+    }
+  }
+
+  /* First arrival of frame 1: held until the stage reaches the middle of the screen, then inked in.
+     Only set by story.js after its observer has reported, so it always gets released. */
+  .story.is-pending .print[data-index="0"] .print__photo img { transform: scale(1.04); }
+  .story.is-pending .print[data-index="0"] .print__caps { opacity: 0; transform: translateY(12px); }
+  .story.is-pending .print[data-index="0"] .print__script { clip-path: inset(-.5em calc(100% + .5em) -.5em -.5em); }
+
+  /* ---------- Sticky, desktop: the copy sits inside the print, on the wall ---------- */
+  @media (min-width: 1024px) {
+    .story.is-sticky { --b: 14px; }
+    .story.is-sticky .story__stage { padding: 0 var(--gutter); }
+    .story.is-sticky .story__counter { position: absolute; top: 32px; left: var(--gutter); margin: 0; }
+    .story.is-sticky .print__fig {
+      position: relative;
+      container-type: inline-size;
+      width: calc((min(84vh, 780px) - 2 * var(--b)) * .75 + 2 * var(--b));
+      width: calc((min(84svh, 780px) - 2 * var(--b)) * .75 + 2 * var(--b));
+    }
+    .story.is-sticky .print__photo { width: 100%; }
+    /* The wall band: 4% to 22% of the photo height. Never lower: the hair starts at 26.5%. */
+    .story.is-sticky .print__copy {
+      --ph: calc((100cqi - 2 * var(--b)) * 4 / 3);
+      position: absolute; z-index: 2;
+      left: var(--b); right: var(--b);
+      top: calc(var(--b) + var(--ph) * .04);
+      height: calc(var(--ph) * .18);
+      min-height: 0;
+      padding: 0 5cqi;
+      justify-content: center;
+    }
+    .story.is-sticky .print__caps { font-size: min(3.25rem, 7.5cqi); }
+    .story.is-sticky .print__script { font-size: min(5rem, 12.5cqi); }
+    .story.is-sticky .print__copy--date .print__script { font-size: min(4rem, 9cqi); }
+    .story.is-sticky .print__small { font-size: max(.875rem, 2.4cqi); }
+    .story.is-sticky .print__numerals { font-size: min(5rem, 12.5cqi); margin-top: .04em; }
+
+    /* The strip these prints came from, pinned at the right edge */
+    .story.is-sticky .story__thumbs {
+      position: absolute; right: var(--gutter); top: 50%;
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 7px 7px 26px;
+      background: var(--card) url("../img/grain.png") 0 0 / 256px repeat;
+      box-shadow: 0 0 0 .5px rgba(23, 21, 19, .08), 0 1px 2px rgba(23, 21, 19, .22), 0 14px 26px -14px rgba(23, 21, 19, .4);
+      translate: 0 -50%;
+      rotate: 1.5deg;
+    }
+    .story.is-sticky .story__thumbs li { position: relative; width: 48px; }
+    .story.is-sticky .story__thumbs img {
+      width: 48px; height: 36px; object-fit: cover;
+      background: var(--dev-cream);
+      opacity: .5;
+      transition: opacity .4s var(--ease-out-expo);
+    }
+    .story.is-sticky .story__thumbs li::after {
+      content: "";
+      position: absolute; left: 0; right: 0; bottom: -6px;
+      height: 2px;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform .45s var(--ease-out-expo);
+    }
+    .story.is-sticky .story__thumbs li.is-active img { opacity: 1; }
+    .story.is-sticky .story__thumbs li.is-active::after { transform: none; }
+  }
+  /* ---------- Sticky, phones held sideways: copy on the paper beside the print ----------
+     Not below 480px wide (a zoomed-in desktop window): half the width is too narrow for the copy. */
+  @media (min-width: 480px) and (max-width: 1023px) and (orientation: landscape) and (max-height: 560px) {
+    .story.is-sticky .story__stage { padding: 16px var(--gutter); }
+    .story.is-sticky .story__counter { position: absolute; top: 10px; left: var(--gutter); margin: 0; }
+    .story.is-sticky .print__fig { flex-direction: row; justify-content: center; gap: clamp(24px, 6vw, 64px); }
+    .story.is-sticky .print__copy { flex: 0 1 auto; max-width: 48%; min-height: 0; padding: 0; }
+    .story.is-sticky .print__photo {
+      flex: none;
+      width: min(46%, calc((100vh - 40px) * .75));
+      width: min(46%, calc((100svh - 40px) * .75));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .story__thumbs img, .story__thumbs li::after { transition: none !important; }
+  }
+}
